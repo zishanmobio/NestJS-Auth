@@ -1,5 +1,4 @@
-import {IsString,IsNumber,Length, IsEmail, MinLength, minLength, IsPhoneNumber, IsMobilePhone, MaxLength, IS_LENGTH, length, isMobilePhone, min, max, Min, Max, isLowercase } from 'class-validator';
-import { Interface } from 'readline';
+import {IsString,IsEmail, MinLength,MaxLength} from 'class-validator';
 
 export class DTO{
     @IsString() 

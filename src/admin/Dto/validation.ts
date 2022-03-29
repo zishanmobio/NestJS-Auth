@@ -1,8 +1,6 @@
 import { IsEmail, IsString,MinLength } from 'class-validator';
 
-import {} from 'class-validator';
-
-export class validAdmin{
+export class ValidSignUp{
 
     @IsString()
     @MinLength(2, { message: 'username length is too short. please enter atleast 2' })

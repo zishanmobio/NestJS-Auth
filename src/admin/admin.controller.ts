@@ -1,5 +1,5 @@
 import { Body, Controller,Post,Get,Request } from '@nestjs/common';
-import {validAdmin, ValidLogin } from './Dto/validation';
+import {ValidSignUp,ValidLogin } from './Dto/validation';
 import {AdminService } from './admin.service';
 
 @Controller('admin')
@@ -9,7 +9,7 @@ export class AdminController {
  
     @Post('register')
     SignUp( 
-     @Body() dto:validAdmin       
+     @Body() dto:ValidSignUp       
     ) {
         return this.adminService.SignUp(dto);
     } 

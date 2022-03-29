@@ -4,9 +4,8 @@ import {Profile } from './auth.model';
 import { Model } from 'mongoose'
 import { DTO,SignInDTO } from './Dto/validate'; 
 import * as bcrypt from 'bcrypt'
-import {Token,Payload} from './Type/main';
-import {JwtService } from '@nestjs/jwt';
-import { Constainst } from './Type/constaint';
+import {Payload,Constainst, Token} from '../Type/main';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +13,7 @@ export class AuthService {
         @InjectModel('Profile')
         private readonly UserModel: Model<Profile>,
         private readonly jwtService:JwtService
-    ) { } 
+     ) { } 
     
      async SignUp(dto:DTO) {
          try{   
@@ -44,7 +43,7 @@ export class AuthService {
          let isMatch: boolean = await bcrypt.compare(dto.password,user.password);
          if (!isMatch) throw new UnauthorizedException('Incorrect Password');  
                
-         let token:Token= await this.GetToken(user._id.toString(), user.email);              
+           let token:Token= await this.GetToken(user._id.toString(), user.email);              
           return token;
         } catch (err) {
             throw new NotFoundException(err); 
@@ -61,15 +60,14 @@ export class AuthService {
 
     } 
      
-      async GetToken(id:string,email:string) {
-           
-        let jwtPayload: Payload = {
-             userid:id,
-             email:email  
-         }
-          let token=await this.jwtService.signAsync(jwtPayload,{ secret:Constainst.access_key,expiresIn:Constainst.expireTime});                            
-          
-          return { access_token: token }; 
-     }
+    async GetToken(id:string,email:string) {
+         
+        let payload: Payload = {
+            userid: id,
+            email:email 
+        }
+         let token = await this.jwtService.sign(payload, { secret: Constainst.access_key, expiresIn: Constainst.expireTime }); 
+        return { access_token: token };  
+     }       
     
 }

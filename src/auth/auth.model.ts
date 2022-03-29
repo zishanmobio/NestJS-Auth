@@ -13,7 +13,7 @@ export const  UserProfile= new mongoose.Schema({
     phone: {
         type:Number, required: true, unique: true
     }
-})
+},{timestamps:true})
 
 export interface Profile {
       name: string,

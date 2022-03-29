@@ -1,17 +1,15 @@
 import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
-
 import { Request, Response, NextFunction } from 'express';
 import {JwtService } from '@nestjs/jwt';
-import { Constainst } from '../Type/constaint';
-
+import { Constainst } from '../Type/main';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware{
 
     constructor(
        public jwtService:JwtService  
-    ) { } 
-    
+    ){ } 
+      
       async use(req:Request,res:Response,next:NextFunction) {
             try{
             let headers: string = req.get('authorization').replace('Bearer', '').trim();

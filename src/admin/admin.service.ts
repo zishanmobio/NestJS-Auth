@@ -3,7 +3,7 @@ import { BadRequestException, Injectable, InternalServerErrorException} from '@n
 import { Model } from 'mongoose';
 import {InjectModel } from '@nestjs/mongoose';
 import {Admin } from './admin.model';
-import { validAdmin, ValidLogin } from './Dto/validation'; 
+import { ValidSignUp, ValidLogin } from './Dto/validation'; 
 import  * as bcrypt from 'bcrypt'
 import {Payload,Token,Constainst} from '../Type/main';
 import {JwtService} from '@nestjs/jwt'
@@ -17,7 +17,7 @@ export class AdminService {
         private readonly jwtService:JwtService
     ){}
      
-    async SignUp(dto:validAdmin) {
+    async SignUp(dto:ValidSignUp) {
         try {
          
          let createAdmin; 

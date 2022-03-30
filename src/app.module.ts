@@ -1,14 +1,18 @@
 import { Module } from '@nestjs/common';
-
 import { MongooseModule } from '@nestjs/mongoose';
-import {AuthModule } from './auth/auth.module';
-import { AdminModule } from './admin/admin.module';
+import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
-    AuthModule, 
-    AdminModule,
-    MongooseModule.forRoot('mongodb://localhost:27017/AuthDB')
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath:'.development.env'
+    }),
+    MongooseModule.forRoot(
+      `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`
+    ),
+    AuthModule,
   ],
   controllers: [],
   providers: [],

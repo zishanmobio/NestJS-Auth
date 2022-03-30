@@ -1,24 +1,32 @@
 import * as mongoose from 'mongoose';
 
-export const  UserProfile= new mongoose.Schema({
-    name: {
+export const UserProfile = new mongoose.Schema({
+    username: {
         type: String, required: true
     },
-    email: {
+    mail: {
         type: String, required: true, unique: true
     },
     password: {
         type: String, required: true
     },
-    phone: {
-        type:Number, required: true, unique: true
+    role: {
+        type: String,
+        enum: ['admin','user','seller'],
+        default:'admin'
+    },
+    active: {
+        type: Boolean,
+        default:true
     }
 },{timestamps:true})
 
 export interface Profile {
-      name: string,
-      email: string,
+      username: string,
+      mail: string,
       password: string,
-      phone: number
+      role:string,
+      active:boolean
 }
+
 

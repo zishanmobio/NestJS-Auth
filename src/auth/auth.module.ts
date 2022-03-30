@@ -5,7 +5,7 @@ import { UserProfile } from './auth.model';
 import {JwtModule } from '@nestjs/jwt';
 import {PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './Protected/jwt.strategy';
-import { LoggerMiddleware } from '../Middleware/middleware';
+import { LoggerMiddleware } from '../Common/Middleware/middleware';
 import { AuthController } from './auth.controller';
 @Module({
   imports: [
@@ -19,6 +19,7 @@ import { AuthController } from './auth.controller';
 })
 
 export class AuthModule implements NestModule{ 
+    
     configure(consumer: MiddlewareConsumer) {
       consumer.apply(LoggerMiddleware)
         .exclude(

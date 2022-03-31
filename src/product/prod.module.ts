@@ -1,7 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
 import {MongooseModule} from '@nestjs/mongoose'
 import {JwtModule } from '@nestjs/jwt';
-import { LoggerMiddleware } from '../common/Middleware/middleware';
+import { LoggerMiddleware } from '../common/middleware/middleware';
 import {ProductSchema } from './prod.model';
 import {ProductController } from './prod.controller';
 import {ProductService } from './prod.service';

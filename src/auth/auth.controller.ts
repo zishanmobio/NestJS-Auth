@@ -1,6 +1,6 @@
-import { Controller, Post, Body, Get, Param, UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Body, Get, Request,Put, Delete, Param } from '@nestjs/common';
 import {AuthService }  from './auth.service';
-import { ValidSignUp, ValidLogin } from './Dto/auth.dto';
+import { ValidSignUp, ValidLogin,ValidUpdate } from './dto/auth.dto';
 
 
 @Controller('auth')
@@ -26,8 +26,34 @@ export class AuthController {
     UserProfile(
         @Request() req
      ){
-         // console.log(req.user);
          return this.authService.GetProfile(req.user); 
      }  
     
+    @Get('getseller')
+    GetsellerList(
+      @Request() req   
+    ) {
+        return this.authService.GetSellerProfile(req.user);  
+      }
+        
+    @Put('active-seller/:id')
+    ActiveSellerAccount(
+        @Request() req,
+        @Param('id') id,
+    ) {
+         
+        return this.authService.ActiveSellerByAdmin(id, req.user);  
+    }
+    @Put('update')
+    UpdateProfile(
+        @Request() req,
+        @Body() dto:ValidUpdate   
+    ) {
+        console.log(dto);
+        return this.authService.UpdateProfile(req.user, dto); 
+     } 
+    
+     
+    
+
 }

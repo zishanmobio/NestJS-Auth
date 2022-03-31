@@ -4,9 +4,10 @@ import {MongooseModule} from '@nestjs/mongoose'
 import { UserProfile } from './auth.model';
 import {JwtModule } from '@nestjs/jwt';
 import {PassportModule } from '@nestjs/passport';
-import { JwtStrategy } from './Protected/jwt.strategy';
-import { LoggerMiddleware } from '../Common/Middleware/middleware';
+import { JwtStrategy } from './protected/jwt.strategy';
+import { LoggerMiddleware } from '../common/Middleware/middleware';
 import { AuthController } from './auth.controller';
+
 @Module({
   imports: [
      JwtModule.register({}),
@@ -14,8 +15,10 @@ import { AuthController } from './auth.controller';
      MongooseModule.forFeature([{name:'Profile',schema:UserProfile}]) 
   ],
   controllers: [AuthController],
-  providers: [AuthService,JwtStrategy]
-  
+  providers: [AuthService,JwtStrategy],
+  exports: [
+    MongooseModule.forFeature([{ name: 'Profile', schema: UserProfile }])
+  ]
 })
 
 export class AuthModule implements NestModule{ 

@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-
+import {Product } from '../product/prod.model';
 export const UserProfile = new mongoose.Schema({
     username: {
         type: String, required: true
@@ -17,8 +17,11 @@ export const UserProfile = new mongoose.Schema({
     },
     active: {
         type: Boolean,
-        default:true
-    }
+        default: true
+    },
+    product: [{
+        type:mongoose.Schema.Types.ObjectId,ref:'Product' 
+    }]
 },{timestamps:true})
 
 export interface Profile {
@@ -26,7 +29,6 @@ export interface Profile {
       mail: string,
       password: string,
       role:string,
-      active:boolean
+      active: boolean;
+      product:Product[]
 }
-
-

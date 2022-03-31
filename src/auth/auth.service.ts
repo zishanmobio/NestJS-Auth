@@ -1,12 +1,14 @@
-import { Injectable, NotFoundException, UnauthorizedException,BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable,UnauthorizedException,BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import {InjectModel } from '@nestjs/mongoose';
 import {Profile } from './auth.model';
 import { Model } from 'mongoose'
-import { ValidLogin,ValidSignUp } from './Dto/auth.dto'; 
+import { ValidLogin,ValidSignUp,ValidUpdate } from './dto/auth.dto'; 
 import * as bcrypt from 'bcrypt'
-import {Payload,Constainst, Token} from '../Common/Type/main';
+import {Payload,Constainst, Token} from '../common/Type/main';
 import { JwtService } from '@nestjs/jwt';
 import {ConfigService } from '@nestjs/config';
+
+
 @Injectable()
 export class AuthService {
     constructor(
@@ -19,36 +21,25 @@ export class AuthService {
     async SignUp(dto:ValidSignUp) {
         try {
          
-         let created; 
-                     
-            if(dto.role === 'admin') {
-          
-                let isexist = await this.UserProfile.findOne({ role: { $eq: 'admin' } }).exec();
-            
-                if (isexist)
-                    throw new BadRequestException({ message: 'please choose user or seller option to signup account.' });
+              let isexist = await this.UserProfile.findOne({ role: { $eq: 'admin' } }).exec();
+             
+              if(isexist) throw new BadRequestException({ message: 'please choose user or seller option to signup account.' });
                    
-                created = await this.CreateRoleOfUser(dto.role, dto);
+              let created = await this.creatUser(dto.role, dto);
                     
-             } else if (dto.role === 'user')
-                created = await this.CreateRoleOfUser(dto.role, dto);
-             else
-                created = await this.CreateRoleOfUser(dto.role, dto);
-             
-             
-            return { username:created.username, mail:created.mail, role:created.role, active:created.active }; 
+              return { username: created.username, mail: created.mail, role: created.role, active: created.active }; 
         
         } catch (err) {
             // console.log(err);
             if (err.code === 11000) {
                 throw new BadRequestException({statusCode:400,message:'email already exists. please login'}) 
-            } else if(err.status === 400) {
+            }else if (err.status === 400) {
                 throw new BadRequestException(err.response.message); 
             }else 
                throw new InternalServerErrorException()  
         } 
     }  
-      
+            
     async Login(dto:ValidLogin) {
            
         let isexist = await this.UserProfile.findOne({ mail: dto.mail.toLowerCase() }).exec(); 
@@ -59,31 +50,85 @@ export class AuthService {
          console.log(isMatch," ",isexist.active)
         if(!isMatch || !isexist.active ) throw new BadRequestException({ message: 'Incorrect Password/ user inactive'}); 
          
-        let token =await  this.GetTokens(isexist.id, isexist.mail);          
+        let token =await  this.SignInTokens(isexist.id, isexist.mail);          
                    
         return token;
 
      }    
 
-    async GetProfile(email:string) {
+    async GetProfile(id:string) {
         
-        let isexist = await this.UserProfile.findOne({ mail: email.toLowerCase() });     
+        let isexist = await this.UserProfile.findOne({ _id:id});     
           
         if (!isexist) throw new BadRequestException('access denied !');
          
         return { username: isexist.username, email: isexist.mail, role: isexist.role };    
          
     }
+       
+    async GetSellerProfile(id:string) {
+         
+        let isexist = await this.UserProfile.findById(id).exec();   
+         
+        if(!isexist) throw new BadRequestException('access denied. !') 
+          
+        let seller = await this.UserProfile.find({ role: 'seller' }).sort({createdAt:-1}).exec();    
+         
+        return seller.map(sel =>{ return {username:sel.username,mail:sel.mail,active:sel.active} })
+
+     }    
+      
+    async ActiveSellerByAdmin(id: string, userid: string) {
+        
+        try {
+             
+         let admin=await this.UserProfile.findOne({_id:userid,role:'admin'})
+          
+         if (!admin) throw new UnauthorizedException('access denied!');
+           
+         let update = await this.UserProfile.updateOne({ _id: id}, { $set: { active: true } });  
+          
+          return {
+            id: id,
+            msg:update.modifiedCount===1 ? `seller account activated...` : `seller account doesn't activated`
+          }
+         }catch (err) {
+            throw new InternalServerErrorException();    
+        }
+           
+      }  
      
+    async UpdateProfile(userid:string,dto:ValidUpdate) {
+              
+        try {
+               
+         let isexist = await this.UserProfile.findOne({_id:userid})  
+            
+         if(!isexist) throw new BadRequestException('unauthorized user not allowed!');  
+       
+        let update = await this.UserProfile.updateOne({_id:userid }, { $set: { mail: dto.mail.toLowerCase(), username: dto.username } });  
+                
+          return {
+            id: isexist.username,
+            msg:update.modifiedCount===1 ? `user profile updated...` : `user profile doesn't updated !`
+          }
+        } catch (err) {
+            
+            if (err) {
+                if(err.code===11000)
+                   throw new BadRequestException({message:'email is already taken. please choose other one.'})
+                
+                throw new BadRequestException();
+            }
+            throw new InternalServerErrorException();                
+         }
+     }
     
     
     
-    
-    
-    
-    
-    
-    async GetTokens(id:string,email:string) {
+    /* Utility Function  */ 
+     
+    async SignInTokens(id: string, email: string) {
            
         let payload: Payload = {
             userid: id,
@@ -94,24 +139,6 @@ export class AuthService {
         return { access_token: token };     
      }
       
-   
-    async CreateRoleOfUser(role: string, dto: ValidSignUp) {
-        
-        let createAdmin;
-        switch (role) {
-            case 'user':
-                createAdmin = await this.creatUser(role, dto);
-                break;  
-            case 'seller':
-                createAdmin = await this.creatUser(role, dto);
-                break;
-            default:
-                createAdmin = await this.creatUser(role, dto);     
-             
-        }
-        return createAdmin;
-     }  
-     
     async creatUser(role: string, dto: ValidSignUp) {
         let hash: string = await bcrypt.hash(dto.password, 10);   
         // console.log(dto.mail);
@@ -126,9 +153,6 @@ export class AuthService {
           
      }  
  
-     
-    
-    
-     
+              
     
 }

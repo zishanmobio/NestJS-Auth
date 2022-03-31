@@ -31,5 +31,14 @@ export class ValidLogin{
 
 }
 
+export class ValidUpdate{
+         
+    @IsEmail()
+    mail: string;
 
+    @IsString()
+    @MinLength(2, { message: 'username length is too short. please enter atleast 2' })
+    username: string;
+
+}
 

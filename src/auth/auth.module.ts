@@ -5,7 +5,7 @@ import { UserProfile } from './auth.model';
 import {JwtModule } from '@nestjs/jwt';
 import {PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './protected/jwt.strategy';
-import { LoggerMiddleware } from '../common/middleware/middleware';
+import { LoggerMiddleware } from '../common/middlewares/middleware';
 import { AuthController } from './auth.controller';
 
 @Module({

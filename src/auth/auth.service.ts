@@ -4,7 +4,7 @@ import {Profile } from './auth.model';
 import { Model } from 'mongoose'
 import { ValidLogin,ValidSignUp,ValidUpdate } from './dto/auth.dto'; 
 import * as bcrypt from 'bcrypt'
-import {Payload,Constainst, Token} from '../common/type/main';
+import {Payload,Constainst, Token} from '../common/types/main';
 import { JwtService } from '@nestjs/jwt';
 import {ConfigService } from '@nestjs/config';
 

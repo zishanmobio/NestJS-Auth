@@ -35,7 +35,7 @@ export class ProductService{
         //    return {msg:'created product..'}
         return { title: result.title, description: result.description, price: result.price };
         } catch (err) {
-            if (err.status)
+            if (err.status===400)
                 throw new BadRequestException();      
             
             throw new InternalServerErrorException(); 

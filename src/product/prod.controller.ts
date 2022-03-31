@@ -14,7 +14,6 @@ export class ProductController{
         @Request() req,
         @Body() dto:CreateProd 
     ) { 
-         
         return this.productService.CreateProduct(req.user, dto); 
     }
      

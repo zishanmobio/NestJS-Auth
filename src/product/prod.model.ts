@@ -10,9 +10,12 @@ export const ProductSchema = new mongoose.Schema({
 },{timestamps:true})
 
 export interface Product {
+    _id: string;
     title: string;
     description: string;
     url: string;
     price: number;
-    createdby:Profile
+    createdby: Profile,
+    createdAt: Date,
+    updatedAt:Date
 }
